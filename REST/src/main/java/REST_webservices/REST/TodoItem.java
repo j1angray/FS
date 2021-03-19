@@ -2,13 +2,24 @@ package REST_webservices.REST;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class TodoItem {
-	private long id;
+	@Id
+	@GeneratedValue
+	private Long id; // should be auto-generated
 	private String username;
 	private String description;
 	private Date deadline;
 	private boolean finished;
 	
+	protected TodoItem() { // Error 500 (Type definition error, no creators)
+		
+	}
+
 	public TodoItem(long id, String username, String description, Date deadline, boolean finished) {
 		super();
 		this.id = id;
@@ -18,10 +29,10 @@ public class TodoItem {
 		this.finished = finished;
 	}
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getUsername() {

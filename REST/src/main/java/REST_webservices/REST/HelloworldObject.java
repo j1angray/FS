@@ -24,4 +24,9 @@ public class HelloworldObject {
 		return "Hello World, " + name;
 	}
 	
+	@GetMapping(path = "/auth")
+	public String auth() {
+		return "authenticated";
+	}
+	
 }

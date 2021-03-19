@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TodoHardcodedExample {
 	private static List<TodoItem> todos = new ArrayList<TodoItem>();
-	private static int counter = 0;
+	private static long counter = 0;
 	
 	static {
 		todos.add(new TodoItem(++counter, "vante", "full stack course", new Date(), false));
@@ -19,6 +19,18 @@ public class TodoHardcodedExample {
 		return todos;
 	}
 	
+	public TodoItem updateItem(TodoItem item){
+		if(item.getId() == -1 || item.getId() == 0) { // new item
+			item.setId(++counter);
+			todos.add(item);
+		}
+		else {
+			deleteItembyID(item.getId());
+			todos.add(item);
+		}
+		return item;
+	}
+	
 	public TodoItem deleteItembyID(long id){
 		TodoItem selectedItem = selectItembyID(id);
 		if(selectedItem == null) {
@@ -27,6 +39,7 @@ public class TodoHardcodedExample {
 		if (todos.remove(selectedItem)) {
 			return selectedItem;
 		}
+		
 		return null;
 	}
 	

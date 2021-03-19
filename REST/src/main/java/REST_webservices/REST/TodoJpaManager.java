@@ -19,42 +19,52 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 
 @RestController
-public class TodoManager {
+public class TodoJpaManager {
 	
 	@Autowired
 	private TodoHardcodedExample codedTodos;
 	
-	@GetMapping("/users/{username}/todos")
+	@Autowired
+	private TodoJpaRepository JpaTodos;
+	
+	@GetMapping("/jpa/users/{username}/todos")
 	public List<TodoItem> retrieveAllItems(@PathVariable String username) {
-		return codedTodos.getTodos();
-	}
-	
-	@GetMapping("/users/{username}/todos/{id}")
-	public TodoItem retrieveItemInfo(@PathVariable String username, @PathVariable long id) {
-		return codedTodos.selectItembyID(id);
-	}
-	
-	@DeleteMapping("/users/{username}/todos/{id}")
-	public ResponseEntity<Void> deleteItem(@PathVariable String username, @PathVariable long id) {
-		TodoItem todo = codedTodos.deleteItembyID(id);
+		return JpaTodos.findByUsername(username); 
+		//return codedTodos.getTodos();
 		
+	}
+	
+	@GetMapping("/jpa/users/{username}/todos/{id}")
+	public TodoItem retrieveItemInfo(@PathVariable String username, @PathVariable long id) {
+		return JpaTodos.findById(id).get();
+		//return codedTodos.selectItembyID(id);
+	}
+	
+	@DeleteMapping("/jpa/users/{username}/todos/{id}")
+	public ResponseEntity<Void> deleteItem(@PathVariable String username, @PathVariable long id) {
+		JpaTodos.deleteById(id);
+		return ResponseEntity.notFound().build(); 
+		/*
+		TodoItem todo = codedTodos.deleteItembyID(id);	
 		if (todo != null) {
 			return ResponseEntity.noContent().build();
 		}
-
 		return ResponseEntity.notFound().build(); // ResponseEntity - HTTP Standards
+		*/
 	}
 	
-	@PutMapping("/users/{username}/todos/{id}")
+	@PutMapping("/jpa/users/{username}/todos/{id}")
 	public ResponseEntity<TodoItem> updateItem(@PathVariable String username, @PathVariable long id, @RequestBody TodoItem item) {		
-		TodoItem todo = codedTodos.updateItem(item);
-
+		item.setUsername(username); //front end don't provide username field
+		TodoItem todo = JpaTodos.save(item);
+		
 		return new ResponseEntity<TodoItem>(todo, HttpStatus.OK); // HttpStatus - HTTP Standards
 	}
 	
-	@PostMapping("/users/{username}/todos")
-	public ResponseEntity<Void> save(@PathVariable String username, @RequestBody TodoItem item) {	
-		TodoItem todo = codedTodos.updateItem(item);
+	@PostMapping("/jpa/users/{username}/todos")
+	public ResponseEntity<Void> save(@PathVariable String username, @RequestBody TodoItem item) {		
+		item.setUsername(username);
+		TodoItem todo = JpaTodos.save(item);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(todo.getId()).toUri();
 		
